@@ -1,0 +1,29 @@
+body {
+	background-color: #2e0916;
+}
+
+.btn-primary {
+	background-color: #ff5b79 !important ;
+}
+
+* {
+	color: white;
+}
+
+input {
+	color: black;
+}
+
+.card * {
+	color: black;
+}
+
+.modal-body *,
+.modal-header *,
+.modal-body,
+.modal-title,
+.modal-footer,
+.modal-header {
+	color: white !important;
+	background-color: #2e0916;
+}

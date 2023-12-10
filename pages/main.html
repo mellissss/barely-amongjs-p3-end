@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Список комнат для игры</title> 
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+			crossorigin="anonymous"
+		/>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+			crossorigin="anonymous"
+		></script>
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.50.0/phaser.min.js"
+			integrity="sha512-9EVYstCWUb0aS09mkZh47/918s6Qrcfv1O9BLwJTeLW9WyVTfYbg1q1BqUTWahwd+kdBPDQ9jp7z3V2IWWIJMA=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		></script>
+		<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+		<script src="./../src/signalr.js"></script>
+		<script src="./../src/index.js"></script>
+		<script src="./../src/main.js" type="module"></script>
+		<link rel="stylesheet" href="./../css/style.css" />
+		<style>
+			#game {
+	min-height: 100vh;
+    min-width: 100vw;
+    z-index: 999999999999;
+    position: absolute;
+    left: 0;
+    top: 0;
+	display: none;
+	overflow: hidden;
+			}
+			body{
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body
+		<div class="container mt-5">
+			<span id="nickname"></span>
+			<div class="row">
+				<div class="col-md-6">
+					<input
+						type="text"
+						class="form-control mb-3"
+						placeholder="Поиск комнат"
+					/>
+				</div>
+				<div class="col-md-6 text-right">
+					<button
+						class="btn btn-primary"
+						data-bs-toggle="modal"
+						data-bs-target="#createRoomModal"
+					>
+						Создать комнату
+					</button>
+				</div>
+			</div>
+
+			<!-- Карточки комнат -->
+			<div class="row" id="roomList">
+				<!-- Пример карточки комнаты -->
+			</div>
+		</div>
+
+		<!-- Модальное окно для создания комнаты -->
+		<div
+			class="modal fade"
+			id="createRoomModal"
+			tabindex="-1"
+			role="dialog"
+			aria-labelledby="createRoomModalLabel"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="createRoomModalLabel">
+							Создать комнату
+						</h5>
+						<button
+							type="button"
+							class="close"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						>
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="roomName">Название комнаты</label>
+							<input
+								type="text"
+								class="form-control"
+								id="roomName"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="roomPassword"
+								>Пароль (необязательно)</label
+							>
+							<input
+								type="password"
+								class="form-control"
+								id="roomPassword"
+							/>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button
+							type="button"
+							class="btn btn-secondary"
+							data-bs-dismiss="modal"
+						>
+							Закрыть
+						</button>
+						<button
+							type="button"
+							class="btn btn-primary"
+							id="createRoomButton"
+						>
+							Создать
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="roomModal" class="modal" tabindex="-1">
+			<div class="modal-dialog modal-fullscreen">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">
+							Комната: <span id="roomNameModal"></span>
+						</h5>
+					</div>
+					<div class="modal-body">
+						Готовы
+						<span id="roomReadyCount"> 5 </span>
+						из
+						<span id="roomUsersCount"> 5 </span>
+						<ul id="roomUsers" class="list-group"></ul>
+					</div>
+					<div class="modal-footer">
+						<button
+							id="exitRoom"
+							type="button"
+							class="btn btn-secondary"
+							data-bs-dismiss="modal"
+						>
+							Выйти из комнаты
+						</button>
+						<button id="Play" type="button" class="btn btn-primary">
+							Начать игру
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="game">
+		</div>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	</body>
+</html>
